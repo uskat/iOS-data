@@ -57,20 +57,30 @@ class FeedViewController: UIViewController {
         return $0
     }(UIStackView())
     
-    private lazy var feedButton1: CustomButton = {
+    private lazy var feedButton0: CustomButton = {
         let button = CustomButton(
-            title: "New Post",
-            titleHighlighted: "Post opening......",
+            title: "To InfoViewVC",
+            titleHighlighted: "InfoViewVC opening...",
             titleColor: .yellow,
             titleHighlightedColor: .lightGray,
-            tapAction: { [weak self] in self?.tapFeedButton() })
+            tapAction: { [weak self] in self?.tapFeedButton0() })
+        return button
+    }()
+    
+    private lazy var feedButton1: CustomButton = {
+        let button = CustomButton(
+            title: "List of videos",
+            titleHighlighted: "List of videos opening...",
+            titleColor: .green,
+            titleHighlightedColor: .lightGray,
+            tapAction: { [weak self] in self?.tapFeedButton1() })
         return button
     }()
     
     private lazy var feedButton2: CustomButton = {
         let button = CustomButton(
             title: "Open videoplayer",
-            titleHighlighted: "video opening...",
+            titleHighlighted: "Videoplayer opening...",
             titleColor: .green,
             titleHighlightedColor: .lightGray,
             tapAction: { [weak self] in self?.tapFeedButton2() })
@@ -95,7 +105,11 @@ class FeedViewController: UIViewController {
     }
 
 //MARK: - METHODs
-    private func tapFeedButton() {
+    private func tapFeedButton0() {
+        viewModel.load(to: .info)
+    }
+    
+    private func tapFeedButton1() {
         viewModel.load(to: .post)
     }
     
@@ -116,7 +130,7 @@ class FeedViewController: UIViewController {
     
     private func showItems() {
         [headline, guessTextField, checkGuessButton, feedStackView].forEach{ view.addSubview($0) }
-        [feedButton1, feedButton2].forEach { feedStackView.addArrangedSubview($0) }
+        [feedButton0, feedButton1, feedButton2].forEach { feedStackView.addArrangedSubview($0) }
 
         NSLayoutConstraint.activate([
             //заголовок проверки значения
@@ -139,7 +153,7 @@ class FeedViewController: UIViewController {
             feedStackView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             feedStackView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
             feedStackView.widthAnchor.constraint(equalToConstant: screenWidth),
-            feedStackView.heightAnchor.constraint(equalToConstant: 110)
+            feedStackView.heightAnchor.constraint(equalToConstant: 170)
         ])
     }
 }
