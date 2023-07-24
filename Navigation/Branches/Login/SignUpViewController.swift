@@ -2,27 +2,23 @@
 import UIKit
 import FirebaseAuth
 
-class LogInViewController: UIViewController {
+class SignUpViewController: UIViewController {
 
-    private let viewModel: ProfileViewModel
-    private let firestoreManager = FirestoreManager.shared
-//    let bruteForce = BruteForce()
-    let userService = CurrentUserService.shared
-    var loginDelegate: LoginViewControllerDelegate?
+    private let viewModel = ProfileViewModel()
     private let notification = NotificationCenter.default ///уведомление для того чтобы отслеживать перекрытие клавиатурой UITextField
-    
+
 //MARK: - ITEMs
     private let scrollLoginView: UIScrollView = {
         $0.translatesAutoresizingMaskIntoConstraints = false
         $0.backgroundColor = .white
         return $0
     }(UIScrollView())
-    
+
     private let contentView: UIView = {
         $0.translatesAutoresizingMaskIntoConstraints = false
         return $0
     }(UIView())
-    
+
     private let logoItem: UIImageView = {
         $0.translatesAutoresizingMaskIntoConstraints = false
         $0.contentMode = .scaleAspectFit
@@ -30,8 +26,8 @@ class LogInViewController: UIViewController {
         $0.isUserInteractionEnabled = true
         return $0
     }(UIImageView())
-    
-    private let loginStack: UIStackView = {
+
+    private let stackLogin: UIStackView = {
         $0.translatesAutoresizingMaskIntoConstraints = false
         $0.axis = .vertical
         $0.distribution = .fillEqually
@@ -47,44 +43,36 @@ class LogInViewController: UIViewController {
     private lazy var loginTextField: UITextField = {
         $0.translatesAutoresizingMaskIntoConstraints = false
         $0.font = UIFont.systemFont(ofSize: 16, weight: .regular)
+        $0.layer.borderColor = UIColor.lightGray.cgColor
+        $0.layer.borderWidth = 0.5
         $0.placeholder = "Login"
         $0.tag = 1
-        $0.delegate = self
         $0.tintColor = UIColor.AccentColor.normal                           ///цвет курсора
         $0.layer.sublayerTransform = CATransform3DMakeTranslation(5, 0, 0)  ///сдвиг курсора на 5пт в textField (для красоты)
         $0.autocapitalizationType = .none
         $0.backgroundColor = .systemGray6
         return $0
     }(UITextField())
-   
+
     private lazy var loginAlert: UILabel = {
         $0.translatesAutoresizingMaskIntoConstraints = false
         $0.textColor = .systemRed
         $0.font = UIFont.systemFont(ofSize: 13, weight: .light)
         return $0
     }(UILabel())
-    
-    private lazy var loginView: UIView = {
-        $0.translatesAutoresizingMaskIntoConstraints = false
-        $0.layer.borderColor = UIColor.lightGray.cgColor
-        $0.layer.borderWidth = 0.5
-        $0.backgroundColor = .systemGray6
-        return $0
-    }(UIView())
-    
+
     private lazy var passTextField: UITextField = {
         $0.translatesAutoresizingMaskIntoConstraints = false
         $0.font = UIFont.systemFont(ofSize: 16, weight: .regular)
         $0.placeholder = "Password"
         $0.tag = 2
-        $0.delegate = self
         $0.tintColor = UIColor.AccentColor.normal                           ///цвет курсора
         $0.layer.sublayerTransform = CATransform3DMakeTranslation(5, 0, 0)  ///сдвиг курсора на 5пт в textField (для красоты)
         $0.backgroundColor = .systemGray6
         $0.isSecureTextEntry = true
         return $0
     }(UITextField())
-    
+
     private lazy var passAlert: UILabel = {
         $0.translatesAutoresizingMaskIntoConstraints = false
         $0.textColor = .systemRed
@@ -92,35 +80,33 @@ class LogInViewController: UIViewController {
         return $0
     }(UILabel())
 
-    private lazy var loginButton: CustomButton = {
-        let button = CustomButton(
-            title: "Sign in",
-            background: UIColor.AccentColor.normal,
-            tapAction:  { [weak self] in self?.tapLoginButton() })
-        button.layer.cornerRadius = 10
-        button.layer.shadowOffset = CGSize(width: 4, height: 4)
-        button.layer.shadowRadius = 4
-        button.layer.shadowColor = UIColor.black.cgColor
-        button.layer.shadowOpacity = 0.7
-        return button
-    }()
+    private lazy var nameTextField: UITextField = {
+        $0.translatesAutoresizingMaskIntoConstraints = false
+        $0.font = UIFont.systemFont(ofSize: 16, weight: .regular)
+        $0.layer.borderColor = UIColor.lightGray.cgColor
+        $0.layer.borderWidth = 0.5
+        $0.placeholder = "Name"
+        $0.tag = 4
+//            $0.delegate = self
+        $0.tintColor = UIColor.AccentColor.normal                           ///цвет курсора
+        $0.layer.sublayerTransform = CATransform3DMakeTranslation(5, 0, 0)  ///сдвиг курсора на 5пт в textField (для красоты)
+        $0.backgroundColor = .systemGray6
+        return $0
+    }(UITextField())
     
     private lazy var signUpButton: CustomButton = {
         let button = CustomButton(
             title: "Sign up",
-            titleColor: UIColor.AccentColor.normal,
-            background: UIColor.systemGray6,
+            background: UIColor.AccentColor.normal,
             tapAction:  { [weak self] in self?.tapSignUpButton() })
         button.layer.cornerRadius = 10
-        button.layer.borderColor = UIColor.AccentColor.normal.cgColor
-        button.layer.borderWidth = 1
         button.layer.shadowOffset = CGSize(width: 4, height: 4)
         button.layer.shadowRadius = 4
         button.layer.shadowColor = UIColor.black.cgColor
         button.layer.shadowOpacity = 0.7
         return button
     }()
-    
+
     var errorsLabel: UILabel = {
         $0.translatesAutoresizingMaskIntoConstraints = false
         $0.font = UIFont.systemFont(ofSize: 10, weight: .regular)
@@ -129,40 +115,16 @@ class LogInViewController: UIViewController {
         $0.numberOfLines = 9
         return $0
     }(UILabel())
-    
-    private lazy var activitySign: UIActivityIndicatorView = {
-        $0.translatesAutoresizingMaskIntoConstraints = false
-        $0.style = .large
-        $0.color = UIColor.AccentColor.normal
-        return $0
-    }(UIActivityIndicatorView())
-    
-    
+
 //MARK: - INITs
-    init(viewModel: ProfileViewModel) {
-        self.viewModel = viewModel
-        super.init(nibName: nil, bundle: nil)
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
+        view.addTapGestureToHideKeyboard()
         showLoginItems()
-        view.addTapGestureToHideKeyboard() ///скрываем клавиатуру при нажатии вне поля textField
-        #if DEBUG
-            loginTextField.text = "22@ru.ru"
-            passTextField.text = "222222"
-        #else
-            loginTextField.text = "11@ru.ru"
-            passTextField.text = "111111"
-        #endif
-//        setupLogoGestures() ///запуск bruteforce
     }
-
+    
     override func viewWillAppear(_ animated: Bool) {
         self.navigationController?.navigationBar.isHidden = true ///прячем NavigationBar
         notification.addObserver(self,
@@ -185,12 +147,12 @@ class LogInViewController: UIViewController {
                                     name: UIResponder.keyboardWillHideNotification,
                                     object: nil)
     }
-        
+
     override func viewDidAppear(_ animated: Bool) {
         loginTextField.animate(newText: placeHolder(loginTextField), characterDelay: 0.2)
         passTextField.animate(newText: placeHolder(passTextField), characterDelay: 0.2)
+        nameTextField.animate(newText: placeHolder(nameTextField), characterDelay: 0.2)
     }
-    
     
 //MARK: - METHODs
     @objc private func keyboardAppear(notification: NSNotification) {
@@ -202,75 +164,78 @@ class LogInViewController: UIViewController {
                                                                          right: 0)
         }
     }
-    
+
     @objc private func keyboardDisappear() {
         scrollLoginView.contentInset = .zero
         scrollLoginView.verticalScrollIndicatorInsets = .zero
     }
-        
-    private func tapLoginButton() {
-        viewModel.statusEntry = true
-        
-        checkInputedData(loginTextField, loginAlert)
-        UIView.animate(withDuration: 4.5, delay: 0.0, options: .curveEaseOut) { [self] in
-            errorsLabel.text = validateEmail(loginTextField)
-            errorsLabel.alpha = 1.0
-            view.layoutIfNeeded()
-        } completion: { _ in
-            UIView.animate(withDuration: 0.5, delay: 0.0, options: .curveEaseIn) { [self] in
-                errorsLabel.text = ""
-                errorsLabel.alpha = 0.0
-                view.layoutIfNeeded()
-            } completion: { _ in  }
-        }
-        
-        checkInputedData(passTextField, passAlert)
-        
-        if viewModel.statusEntry {
-            if let login = loginTextField.text, let pass = passTextField.text {
-                activitySign.startAnimating()
-                loginDelegate?.signIn(login: login, pass: pass)
-                
-                DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2), execute: {
-                    if let user = self.userService.user {
-                        self.userService.getUserData(from: user.login)
-                        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2), execute: {
-                            self.activitySign.stopAnimating()
-                            if self.userService.userData != nil {
-                                self.viewModel.load(to: .profile)
-                            } else {
-                                self.alertOfLogIn(title: "Error",
-                                                  message: "Connection failed. Check your connection and try again later.")
-                                try? self.viewModel.firebaseService.signOut()
-                            }
-                        })
-                    } else {
-                        self.alertOfLogIn(title: "Incorrect login or password",
-                                          message: "Please, check inputed data.")
-                    }
-                })
-            }
-        }
-    }
 
     private func tapSignUpButton() {
         print("sign up tapped")
-        let vc = SignUpViewController()
-        navigationController?.pushViewController(vc, animated: true)
+        var reason = """
+        """
+        var reasonCount = 0
+        
+        if validateEmail(loginTextField) != "" {
+            reason += validateEmail(loginTextField)
+            reasonCount += 1
+        }
+        
+        if passTextField.text?.count ?? 0 < 6 {
+            reason += "Password must contain more than 6 characters\n"
+            reasonCount += 1
+        }
+        
+        if nameTextField.text?.count ?? 0 < 3 {
+            reason += "Username must contain more than 3 characters\n"
+            reasonCount += 1
+        }
+        
+        if reasonCount == 0 {
+            if let login = loginTextField.text, let pass = passTextField.text, let name = nameTextField.text {
+                viewModel.firebaseService.signUp(withEmail: login, withPass: pass, completion: { result in
+                    let userService = CurrentUserService.shared
+                    switch result {
+                    case .success(let user):
+                        userService.addUserData(to: user.login, name: name, status: "Hello, my padawan!")
+                        do {
+                            try self.viewModel.firebaseService.signOut()
+                        } catch {
+                            print("")
+                        }
+                        self.alertOfSignUp(title: "You have registered successfully",
+                                           message: "To log in, enter your email and password.",
+                                           refreshTag: true)
+                        print("✅ registration was successful. Dump = \(dump(user))")
+                    case .failure(let error):
+                        self.alertOfSignUp(title: "Registration failed",
+                                           message: "\(error)")
+                        print("⛔️ registration failed, cause = \(error)")
+                    }
+                })
+            }
+        } else {
+            self.alertOfSignUp(title: "Registration failed",
+                               message: "\(reason)")
+        }
     }
-    
-    private func alertOfLogIn(title: String, message: String) {
+
+    private func alertOfSignUp(title: String, message: String, refreshTag: Bool = false) {
         let alert = UIAlertController(title: title,
                                       message: message,
                                       preferredStyle: .alert)
-        let cancel = UIAlertAction(title: "Ok",
-                                   style: .destructive) {
-            _ in print("Отмена")
+        let done = UIAlertAction(title: "Ок",
+                                 style: .default) { _ in
+            print("Ок")
+            if refreshTag {
+                self.navigationController?.popToRootViewController(animated: true)
+                self.view.endEditing(true)
+            }
         }
-        alert.addAction(cancel)
+        alert.addAction(done)
         present(alert, animated: true)
     }
-    
+
     private func validateEmail(_ textField: UITextField) -> String {
         var listOfErrorsToScreen = """
         """
@@ -288,19 +253,19 @@ class LogInViewController: UIViewController {
         }
         return listOfErrorsToScreen
     }
-        
+
     private func showLoginItems() {
         view.addSubview(scrollLoginView)
-        
+
         NSLayoutConstraint.activate([
             scrollLoginView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             scrollLoginView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
             scrollLoginView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
             scrollLoginView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
         ])
-        
+
         scrollLoginView.addSubview(contentView)
-        
+
         NSLayoutConstraint.activate([
             contentView.topAnchor.constraint(equalTo: scrollLoginView.topAnchor),
             contentView.leadingAnchor.constraint(equalTo: scrollLoginView.leadingAnchor),
@@ -308,38 +273,28 @@ class LogInViewController: UIViewController {
             contentView.bottomAnchor.constraint(equalTo: scrollLoginView.bottomAnchor),
             contentView.widthAnchor.constraint(equalTo: scrollLoginView.widthAnchor)
         ])
-        
-        [logoItem, loginStack, activitySign, loginButton, signUpButton, errorsLabel].forEach({ contentView.addSubview($0) })
-        loginView.addSubview(loginTextField)
-        [loginView, passTextField].forEach({ loginStack.addArrangedSubview($0) })
+
+        [logoItem, stackLogin, errorsLabel, signUpButton].forEach({ contentView.addSubview($0) })
+        [loginTextField, passTextField, nameTextField].forEach({ stackLogin.addArrangedSubview($0) })
         [loginAlert, passAlert].forEach({ contentView.addSubview($0) })
-        
+
         NSLayoutConstraint.activate([
-            logoItem.topAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.topAnchor, constant: 120),
+            logoItem.topAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.topAnchor, constant: 80),
             logoItem.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             logoItem.widthAnchor.constraint(equalToConstant: 100),
             logoItem.heightAnchor.constraint(equalToConstant: 100),
-            
-            loginTextField.topAnchor.constraint(equalTo: loginView.topAnchor),
-            loginTextField.leadingAnchor.constraint(equalTo: loginView.leadingAnchor),
-            loginTextField.trailingAnchor.constraint(equalTo: loginView.trailingAnchor),
-            loginTextField.bottomAnchor.constraint(equalTo: loginView.bottomAnchor),
 
-            loginStack.topAnchor.constraint(equalTo: logoItem.bottomAnchor, constant: 120),
-            loginStack.leadingAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.leadingAnchor, constant: 16),
-            loginStack.trailingAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.trailingAnchor, constant: -16),
-            loginStack.heightAnchor.constraint(equalToConstant: 100),
-            
-            activitySign.topAnchor.constraint(equalTo: logoItem.bottomAnchor, constant: 20),
-            activitySign.centerXAnchor.constraint(equalTo: logoItem.centerXAnchor),
+            stackLogin.topAnchor.constraint(equalTo: logoItem.bottomAnchor, constant: 80),
+            stackLogin.leadingAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.leadingAnchor, constant: 16),
+            stackLogin.trailingAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.trailingAnchor, constant: -16),
+            stackLogin.heightAnchor.constraint(equalToConstant: 150),
 
-            loginButton.topAnchor.constraint(equalTo: loginStack.bottomAnchor, constant: 16),
-            loginButton.leadingAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.leadingAnchor, constant: 16),
-            loginButton.trailingAnchor.constraint(equalTo: logoItem.trailingAnchor),
-            loginButton.heightAnchor.constraint(equalToConstant: 50),
-            //loginButton.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -16),
-            
-            errorsLabel.topAnchor.constraint(equalTo: loginButton.bottomAnchor, constant: 16),
+            signUpButton.topAnchor.constraint(equalTo: stackLogin.bottomAnchor, constant: 16),
+            signUpButton.leadingAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.leadingAnchor, constant: 16),
+            signUpButton.trailingAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.trailingAnchor, constant: -16),
+            signUpButton.heightAnchor.constraint(equalToConstant: 50),
+
+            errorsLabel.topAnchor.constraint(equalTo: signUpButton.bottomAnchor, constant: 16),
             errorsLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
             errorsLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
             errorsLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -16),
@@ -347,67 +302,18 @@ class LogInViewController: UIViewController {
             loginAlert.centerYAnchor.constraint(equalTo: loginTextField.centerYAnchor),
             loginAlert.trailingAnchor.constraint(equalTo: loginTextField.trailingAnchor, constant: -5),
             loginAlert.widthAnchor.constraint(equalToConstant: 220),
-            
+
             passAlert.centerYAnchor.constraint(equalTo: passTextField.centerYAnchor),
             passAlert.trailingAnchor.constraint(equalTo: passTextField.trailingAnchor, constant: -5),
             passAlert.widthAnchor.constraint(equalToConstant: 220),
-            
-            signUpButton.topAnchor.constraint(equalTo: loginButton.topAnchor),
-            signUpButton.leadingAnchor.constraint(equalTo: logoItem.trailingAnchor, constant: 16),
-            signUpButton.trailingAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.trailingAnchor, constant: -16),
-            signUpButton.heightAnchor.constraint(equalToConstant: 50),
         ])
     }
 }
 
 //MARK: убираем клавиатуру по нажатию Enter (Return)
-extension LogInViewController: UITextFieldDelegate {
+extension SignUpViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         view.endEditing(true)
         return true
     }
 }
-
-//extension LogInViewController {
-//    private func setupLogoGestures() {
-//        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(tapLogo))
-//        logoItem.addGestureRecognizer(tapGesture)
-//    }
-//
-//    @objc private func tapLogo (){
-//        users[4].password = bruteForce.generatePass()
-//        print("generate new pass = \(users[4].password)")
-//
-//        let queue = OperationQueue()
-//        let operation = Operation()
-//
-//        queue.addBarrierBlock {
-//            OperationQueue.main.addOperation { [weak self] in
-//                self?.startIndicator()
-//            }
-//            self.bruteForce.findPass()
-//        }
-//
-//        operation.completionBlock = {
-//            OperationQueue.main.addOperation { [weak self] in
-//                self?.stopIndicator()
-//            }
-//        }
-//
-//        queue.addOperation(operation)
-//    }
-//
-//    func startIndicator() {
-//        self.activitySign.startAnimating()
-//        print("animate")
-//        self.activitySign.isHidden = false
-//    }
-//
-//    func stopIndicator() {
-//        self.activitySign.stopAnimating()
-//        print("stop animate")
-//        self.activitySign.isHidden = true
-//        self.pass.isSecureTextEntry = false
-//        self.pass.text = self.bruteForce.password
-//    }
-//}
