@@ -9,14 +9,12 @@ class ProfileViewModel: ViewModelProtocol {
 //    }
     //MARK: LoginViewModel
     var statusEntry = true
-//    var isLogin: Bool = false
-    
-    var user: User?
+    var firebaseService = FirebaseService.shared
     var photos = Photo.addPhotos()
     weak var coordinator: ProfileCoordinator?
-    
+
 #if DEBUG
-    let userService = TestUserService.shared
+//    let userService = TestUserService.shared
 #else
     let userService = CurrentUserService.shared
 #endif

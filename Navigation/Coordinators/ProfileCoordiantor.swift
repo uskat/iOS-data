@@ -3,7 +3,7 @@ import UIKit
 
 class ProfileCoordinator: CoordinatorProtocol {
     
-    let loginInspector = MyLoginFactory.shared.makeLoginInspector() ///LogInDelegate
+//    let loginInspector = MyLoginFactory.shared.makeLoginInspector() ///LogInDelegate
     let branchName: Branch.BranchName
     private let factory: BranchesFactory
     private(set) var branch: Branch?
@@ -30,6 +30,7 @@ class ProfileCoordinator: CoordinatorProtocol {
         case .login as Branch.BranchName.ProfileBranch:
             let view = LogInViewController(viewModel: branch?.viewModel as! ProfileViewModel)
             (branch?.view as? UINavigationController)?.pushViewController(view, animated: true)
+            factory.runLoginInspector(to: view)
         case .profile as Branch.BranchName.ProfileBranch:
             let view = ProfileViewController(viewModel: ((branch?.viewModel as! ProfileViewModel)))
             (branch?.view as? UINavigationController)?.pushViewController(view, animated: true)

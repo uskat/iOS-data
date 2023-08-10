@@ -2,13 +2,20 @@
 import UIKit
 
 public enum ErrorInEmail: String {
-    case dots = "Адрес не может содержать символ \".\" в начале, в конце или дважды"
-    case at = "Email должен содержать символ \"@\""
-    case domainLength = "Домен 1-го уровня не должен быть короче 2 символов"
-    case totalLength = "Общая длина Email не должна превышать 256 символов"
-    case nameLength = "Длина имени почтового адреса должна быть от 1 до 64 символов"
-    case chars = "Email содержит недопустимые символы"
-    case domain = "Слишком короткое доменное имя"
+    case dots = "The address cannot contain the character \".\" at the beginning, at the end, or twice"
+                        //"Адрес не может содержать символ \".\" в начале, в конце или дважды"
+    case at = "Email must contains \"@\" symbol"
+                        //"Email должен содержать символ \"@\""
+    case domainLength = "Level 1 domain must not be shorter than 2 characters"
+                        //"Домен 1-го уровня не должен быть короче 2 символов"
+    case totalLength = "Total email length must not exceed 256 characters"
+                        //"Общая длина Email не должна превышать 256 символов"
+    case nameLength = "The length of the email address name must be between 1 and 64 characters"
+                        //"Длина имени почтового адреса должна быть от 1 до 64 символов"
+    case chars = "Email contains invalid characters"
+                        //"Email содержит недопустимые символы"
+    case domain = "Domain name is too short"
+                        //"Слишком короткое доменное имя"
 }
 
 class EmailValidator {

@@ -9,6 +9,7 @@ func placeHolder(_ textField: UITextField) -> String {
     case 1: return "Login"
     case 2: return "Password"
     case 3: return "Type new status"
+    case 4: return "Name"
     default: return "Type something..."
     }
 }

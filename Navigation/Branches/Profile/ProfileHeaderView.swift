@@ -177,7 +177,6 @@ class ProfileHeaderView: UIView {
     }
     
     @objc private func tapMainButton() {
-//        statusEntry = true
         checkInputedData(editStatus, statusAlert)
         profileStatus.text = statusText
         editStatus.text = ""
@@ -212,7 +211,6 @@ class ProfileHeaderView: UIView {
 //    }
     
     @objc private func tapAcceptStatusButton() {
-//        statusEntry = true
         checkInputedData(editStatus, statusAlert)
         endEditing(true)
         profileStatus.text = statusText

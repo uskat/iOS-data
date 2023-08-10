@@ -4,6 +4,8 @@ import UIKit
 final class BranchesFactory {
     
     static let shared = BranchesFactory()
+    weak var delegateFirebase: FirebaseServiceProtocol?
+    
     private init () {}
 //    private let networkService: NetworkServiceProtocol
 
@@ -20,13 +22,19 @@ final class BranchesFactory {
             return Branch(branchName: branchName, view: view, viewModel: viewModel)
         case .profile:
             let viewModel = ProfileViewModel()
-            let vc = LogInViewController(viewModel: viewModel)
-            
-            lazy var loginInspector = MyLoginFactory.shared.makeLoginInspector() ///LogInDelegate
-            vc.loginDelegate = loginInspector ///LogInDelegate
-
+            var vc = UIViewController()
+            if viewModel.firebaseService.isAuthorized {
+                vc = ProfileViewController(viewModel: viewModel)
+            } else {
+                vc = LogInViewController(viewModel: viewModel)
+                runLoginInspector(to: vc)
+            }
             let view = UINavigationController(rootViewController: vc)
             return Branch(branchName: branchName, view: view, viewModel: viewModel)
         }
+    }
+    func runLoginInspector(to vc: UIViewController) {
+        lazy var loginInspector = MyLoginFactory.shared.makeLoginInspector() ///LogInDelegate
+        (vc as? LogInViewController)?.loginDelegate = loginInspector ///LogInDelegate
     }
 }

@@ -4,7 +4,6 @@ import iOSIntPackage
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate, UIApplicationDelegate {
 
-    //MARK: - PROPs
     var window: UIWindow?
     var coordinators: Coordinators?
    
@@ -13,7 +12,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, UIApplicationDelegate {
         // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
         // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
         guard let windowScene = (scene as? UIWindowScene) else { return }
-//        setupControllers()
         
         let factory = BranchesFactory.shared
         let coordinators = Coordinators(factory: factory)
@@ -22,39 +20,26 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, UIApplicationDelegate {
         NetworkManager.request(for: AppConfiguration.randomURL)
 
         window = UIWindow(windowScene: windowScene)
-        window?.rootViewController = coordinators.start() //tabbar
-//        auth()
+        window?.rootViewController = showStartLogo()
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(4), execute: {
+            self.window?.rootViewController = coordinators.start() //tabbar
+        })
+        
         window?.makeKeyAndVisible()
     }
     
-    func auth() {
-//        let profileViewModel = ProfileViewModel()
-//        print("reload. \(profileViewModel.userService.user)")
+//    func auth() {
 //
-//        if profileViewModel.userService.user != nil {
-//            window?.rootViewController = coordinators.reload(authKey: true)
-//            print("auth true")
-//        } else {
-//            window?.rootViewController = coordinators.reload(authKey: false)
-//            print("auth false")
-//        }
-//        let nvc = coordinators.reload(authKey: true)
-//        window?.rootViewController = nvc
-    }
-    
-//    func setupControllers() {
-//        UINavigationBar.appearance().backgroundColor = .red //.systemGray6
-//        //UIBarButtonItem.appearance().tintColor = UIColor.magenta
-//        UITabBar.appearance().backgroundColor = .systemGray6
-//        feedVC.tabBarItem.title = "Feed"
-//        feedVC.tabBarItem.image = UIImage(systemName: "rectangle.grid.2x2")
-//        feedVC.navigationItem.title = "Feed"
-//        loginVC.tabBarItem.title = "Profile"
-//        loginVC.tabBarItem.image = UIImage(systemName: "person.crop.circle")
-//        let firstNavigationVC = UINavigationController(rootViewController: feedVC)
-//        let secondNavigationVC = UINavigationController(rootViewController: loginVC)
-//        tabbar.viewControllers = [firstNavigationVC, secondNavigationVC]
 //    }
+    
+    func showStartLogo() -> UIViewController {
+        let vc = StartViewController()
+        let nvc = UINavigationController(rootViewController: vc)
+        nvc.isNavigationBarHidden = true
+//        window?.rootViewController = nvc
+        return nvc
+    }
     
     func sceneDidDisconnect(_ scene: UIScene) {
         // Called as the scene is being released by the system.

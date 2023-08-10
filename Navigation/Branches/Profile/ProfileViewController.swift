@@ -8,17 +8,13 @@ protocol AddLikeDelegate: AnyObject {
 
 class ProfileViewController: UIViewController, AddLikeDelegate {
 
+    var userService = CurrentUserService.shared
     let viewModel: ProfileViewModel
-//    let coordinator: ProfileCoordinator
     private let profileHeaderView = ProfileHeaderView()
     private let profileTVCell = ProfileTableViewCell()
     private let detailedPostVC = DetailedPostViewController()
-//    private let loginVC = LogInViewController()
     
 //MARK: - ITEMs
-   
-    //MARK: bottom part of ProfileView
-
     private lazy var tableView: UITableView = {
         $0.translatesAutoresizingMaskIntoConstraints = false
         $0.backgroundColor = .clear
@@ -32,7 +28,6 @@ class ProfileViewController: UIViewController, AddLikeDelegate {
 //MARK: - INITs
     init(viewModel: ProfileViewModel) {
         self.viewModel = viewModel
-//        self.coordinator = coordinator
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -43,10 +38,11 @@ class ProfileViewController: UIViewController, AddLikeDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         showProfileTable()
-        if let user = viewModel.user {   ///после успешного входа в профиль передаем данные о пользователе из "базы данных пользователей"
-            profileHeaderView.profileImage.image = user.avatar
-            profileHeaderView.profileLabel.text = user.fullName
-            profileHeaderView.profileStatus.text = user.status
+        showBarButton()
+        if let userData = userService.userData {
+            profileHeaderView.profileImage.image = UIImage(named: "yoda")
+            profileHeaderView.profileLabel.text = userData.name
+            profileHeaderView.profileStatus.text = userData.status
         } else {
             profileHeaderView.profileImage.image = UIImage(named: "noname")!
             profileHeaderView.profileLabel.text = "Noname"
@@ -60,10 +56,25 @@ class ProfileViewController: UIViewController, AddLikeDelegate {
     }
     
     override func viewWillLayoutSubviews() {
-        self.navigationController?.isNavigationBarHidden = true
+        self.navigationItem.hidesBackButton = true
+//        self.navigationController?.isNavigationBarHidden = true
     }
     
 //MARK: - METHODs
+    private func showBarButton() {
+        let button = UIBarButtonItem(title: "Log Out", style: .plain, target: self, action: #selector(logOutAction))
+        navigationItem.rightBarButtonItem = button
+    }
+    
+    @objc private func logOutAction() {
+        do {
+            try viewModel.firebaseService.signOut()
+            viewModel.load(to: .login)
+        } catch {
+            print("log out failed")
+        }
+    }
+    
     private func showProfileTable() {
         view.addSubview(tableView)
         
