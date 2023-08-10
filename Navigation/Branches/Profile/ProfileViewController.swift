@@ -2,18 +2,21 @@
 import UIKit
 import AVFoundation
 
-protocol AddLikeDelegate: AnyObject {
+protocol ProfileVCDelegate: AnyObject {
+    func openController(for indexPath: IndexPath)
+    func addPostToFavorites(withIndex indexPath: IndexPath)
     func addLike(_ index: IndexPath, _ from: String)
 }
 
-class ProfileViewController: UIViewController, AddLikeDelegate {
+class ProfileViewController: UIViewController {
 
     var userService = CurrentUserService.shared
     let viewModel: ProfileViewModel
     private let profileHeaderView = ProfileHeaderView()
     private let profileTVCell = ProfileTableViewCell()
     private let detailedPostVC = DetailedPostViewController()
-    
+    private let coreDataService: CoreDataProtocol = CoreDataService.shared
+
 //MARK: - ITEMs
     private lazy var tableView: UITableView = {
         $0.translatesAutoresizingMaskIntoConstraints = false
@@ -37,7 +40,7 @@ class ProfileViewController: UIViewController, AddLikeDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        showProfileTable()
+        setupUI()
         showBarButton()
         if let userData = userService.userData {
             profileHeaderView.profileImage.image = UIImage(named: "yoda")
@@ -61,6 +64,7 @@ class ProfileViewController: UIViewController, AddLikeDelegate {
     }
     
 //MARK: - METHODs
+    
     private func showBarButton() {
         let button = UIBarButtonItem(title: "Log Out", style: .plain, target: self, action: #selector(logOutAction))
         navigationItem.rightBarButtonItem = button
@@ -74,8 +78,8 @@ class ProfileViewController: UIViewController, AddLikeDelegate {
             print("log out failed")
         }
     }
-    
-    private func showProfileTable() {
+
+    private func setupUI() {
         view.addSubview(tableView)
         
         NSLayoutConstraint.activate([
@@ -84,18 +88,6 @@ class ProfileViewController: UIViewController, AddLikeDelegate {
             tableView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
             tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
         ])
-    }
-
-    func addLike(_ index: IndexPath, _ from: String) { ///vars: "Profile", "Detail"
-        posts[index.row - 1].likes += 1
-        switch from {
-        case "Detail":  detailedPostVC.delegate = self
-                        detailedPostVC.post = posts[index.row - 1]
-        case "Profile": profileTVCell.delegate = self
-                        profileTVCell.post = posts[index.row - 1]
-        default:        print("")
-        }
-        tableView.reloadRows(at: [index], with: .none)
     }
 }
 
@@ -106,7 +98,7 @@ extension ProfileViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return posts.count + 1
+        return viewModel.posts.count + 1
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -115,8 +107,10 @@ extension ProfileViewController: UITableViewDataSource {
             return cell
         } else {
             let cell = tableView.dequeueReusableCell(withIdentifier: ProfileTableViewCell.identifier, for: indexPath) as! ProfileTableViewCell
-            cell.setupCell(posts[indexPath.row - 1])
-            cell.index = indexPath
+            cell.isFavorites = false
+            cell.selectionStyle = .none  // Убираем выделение ячейки при тапе
+            cell.setupCell(viewModel.posts[indexPath.row - 1])
+            cell.indexPath = indexPath
             cell.delegate = self
             return cell
         }
@@ -137,12 +131,38 @@ extension ProfileViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         240
     }
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if indexPath.row == 0 {
-            //navigationController?.pushViewController(post, animated: true)
 
+//    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+//        if indexPath.row == 0 {
+//            //navigationController?.pushViewController(post, animated: true)
+//
+//            //анимированный push-переход с эффектом fade из Photos в Photo Galery
+//            let photosVC = PhotosViewController(viewModel: viewModel)
+//            let transition = CATransition()
+//            transition.duration = 1.5
+//            transition.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
+//            transition.type = CATransitionType.fade
+//            transition.subtype = CATransitionSubtype.fromTop
+//            self.navigationController?.view.layer.add(transition, forKey: nil)
+//            self.navigationController?.pushViewController(photosVC, animated: false)
+//        } else {
+//            detailedPostVC.indexPath = indexPath
+//            profileTVCell.indexPath = indexPath
+//            detailedPostVC.delegate = self
+//            posts[indexPath.row - 1].views += 1
+//            present(detailedPostVC, animated: true)
+//            detailedPostVC.setupCell(posts[indexPath.row - 1])
+//            tableView.reloadData()
+//        }
+//    }
+}
+
+extension ProfileViewController: ProfileVCDelegate {
+    
+    func openController(for indexPath: IndexPath) {
+        if indexPath.row == 0 {
             //анимированный push-переход с эффектом fade из Photos в Photo Galery
+            let viewModel = ProfileViewModel()
             let photosVC = PhotosViewController(viewModel: viewModel)
             let transition = CATransition()
             transition.duration = 1.5
@@ -152,13 +172,32 @@ extension ProfileViewController: UITableViewDelegate {
             self.navigationController?.view.layer.add(transition, forKey: nil)
             self.navigationController?.pushViewController(photosVC, animated: false)
         } else {
-            detailedPostVC.index = indexPath
-            profileTVCell.index = indexPath
+            detailedPostVC.indexPath = indexPath
+            profileTVCell.indexPath = indexPath
             detailedPostVC.delegate = self
-            posts[indexPath.row - 1].views += 1
+            viewModel.posts[indexPath.row - 1].views += 1
             present(detailedPostVC, animated: true)
-            detailedPostVC.setupCell(posts[indexPath.row - 1])
+            detailedPostVC.setupCell(viewModel.posts[indexPath.row - 1])
             tableView.reloadData()
         }
+    }
+    
+    func addPostToFavorites(withIndex indexPath: IndexPath) {
+        let success = coreDataService.addPostToFavorites(viewModel.posts[indexPath.row - 1])
+        if success {
+            favoritePosts.append(viewModel.posts[indexPath.row - 1])
+        }
+    }
+    
+    func addLike(_ index: IndexPath, _ from: String) { ///vars: "Profile", "Detail"
+        viewModel.posts[index.row - 1].likes += 1
+        switch from {
+        case "Detail":  detailedPostVC.delegate = self
+                        detailedPostVC.post = viewModel.posts[index.row - 1]
+        case "Profile": profileTVCell.delegate = self
+                        profileTVCell.post = viewModel.posts[index.row - 1]
+        default:        print("")
+        }
+        tableView.reloadRows(at: [index], with: .none)
     }
 }

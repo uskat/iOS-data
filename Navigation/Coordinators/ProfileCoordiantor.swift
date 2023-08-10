@@ -18,7 +18,6 @@ class ProfileCoordinator: CoordinatorProtocol {
     func start() -> UIViewController {
         let branch = factory.createBranch(name: branchName)
         let vc = branch.view
-
         vc.tabBarItem = branchName.tabBatItem
         (branch.viewModel as? ProfileViewModel)?.coordinator = self
         self.branch = branch

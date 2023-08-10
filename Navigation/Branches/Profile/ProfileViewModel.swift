@@ -2,16 +2,13 @@
 import UIKit
 
 class ProfileViewModel: ViewModelProtocol {
-//    
-//    enum State {
-//        case initial
-//        case enumerateChars
-//    }
+
     //MARK: LoginViewModel
     var statusEntry = true
     var firebaseService = FirebaseService.shared
     var photos = Photo.addPhotos()
-    weak var coordinator: ProfileCoordinator?
+    var posts: [Post] = Post.addPosts()
+    weak var coordinator: CoordinatorProtocol?
 
 #if DEBUG
 //    let userService = TestUserService.shared

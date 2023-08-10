@@ -1,9 +1,3 @@
-//
-//  Videos.swift
-//  Navigation
-//
-//  Created by Diego Abramoff on 12.06.23.
-//
 
 import Foundation
 

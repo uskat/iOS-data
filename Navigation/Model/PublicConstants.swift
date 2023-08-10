@@ -1,5 +1,5 @@
 
-import StorageService
+//import StorageService
 import UIKit
 
 //MARK: ===================================  HEADER ===================================
@@ -47,7 +47,9 @@ public var users: [Users] = [   ///профили пользователей
 ]
 
 //MARK: ================================== ProfileVC ==================================
-public var posts: [Post] = Post.addPosts()
+//public var posts: [Post] = Post.addPosts()
+public var favoritePosts: [Post] = []
+//public var favoritePosts: [Int] = [3]
 
 //MARK: ================================== MainTabBar =================================
 public var topBarHeight: CGFloat = 0

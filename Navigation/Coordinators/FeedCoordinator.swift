@@ -30,11 +30,11 @@ final class FeedCoordinator: CoordinatorProtocol {
     
     func start() -> UIViewController {
         let branch = factory.createBranch(name: branchName)
-        let view = branch.view
-        view.tabBarItem = branchName.tabBatItem
+        let vc = branch.view
+        vc.tabBarItem = branchName.tabBatItem
         (branch.viewModel as? FeedViewModel)?.coordinator = self
         self.branch = branch
-        return view
+        return vc
     }
     
     func push(to page: CoordinatorsEnumProtocol) {

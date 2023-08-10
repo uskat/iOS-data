@@ -49,10 +49,9 @@ class PhotosViewController: UIViewController {
 //MARK: - INITs
     init(viewModel: ProfileViewModel) {
         self.viewModel = viewModel
-//        self.coordinator = coordinator
         super.init(nibName: nil, bundle: nil)
     }
-    
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
