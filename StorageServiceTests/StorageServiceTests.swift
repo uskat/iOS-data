@@ -1,9 +1,3 @@
-//
-//  StorageServiceTests.swift
-//  StorageServiceTests
-//
-//  Created by Андрей Абрамов on 17/9/22.
-//
 
 import XCTest
 @testable import StorageService

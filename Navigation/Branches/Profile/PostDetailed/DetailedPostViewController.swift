@@ -1,12 +1,12 @@
 
-import StorageService
+//import StorageService
 import UIKit
 
 class DetailedPostViewController: UIViewController {
 
-    var index: IndexPath?
+    var indexPath: IndexPath?
     var post: Post?
-    weak var delegate: AddLikeDelegate?
+    weak var delegate: ProfileVCDelegate?
     
     private var heartWidth = NSLayoutConstraint()
     private var heartHeight = NSLayoutConstraint()
@@ -89,7 +89,7 @@ class DetailedPostViewController: UIViewController {
     }
     
     @objc private func tapLike (){
-        if let index = index { delegate?.addLike(index, "Detail") }
+        if let indexPath = indexPath { delegate?.addLike(indexPath, "Detail") }
         if let post = post {
             UIView.animate(withDuration: 0.3, delay: 0.0, options: .curveEaseOut) { [self] in
                 heart.alpha = 1.0
@@ -150,8 +150,8 @@ class DetailedPostViewController: UIViewController {
     
     func setupCell(_ post: Post) {
         postName.text = post.author
-        postImage.image = post.imageName
-        postDescription.text = post.description
+        postImage.image = UIImage(named: post.imageName)
+        postDescription.text = post.postDescription
         likes.text = "Likes: \(post.likes)"
         views.text = "Views: \(post.views)"
     }

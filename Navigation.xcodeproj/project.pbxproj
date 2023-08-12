@@ -46,6 +46,14 @@
 		08F0949E2825E957003DA7CC /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 08F0949C2825E957003DA7CC /* LaunchScreen.storyboard */; };
 		08F094A62825EB62003DA7CC /* MainTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08F094A52825EB62003DA7CC /* MainTabBarController.swift */; };
 		08F094A82825EB7D003DA7CC /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08F094A72825EB7D003DA7CC /* ProfileViewController.swift */; };
+		B61025D02A808C4B00CB1461 /* FavoritesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B61025CF2A808C4B00CB1461 /* FavoritesViewController.swift */; };
+		B61025D22A808D7800CB1461 /* FavoritesCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B61025D12A808D7800CB1461 /* FavoritesCoordinator.swift */; };
+		B61025D42A80946F00CB1461 /* FavoritesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B61025D32A80946E00CB1461 /* FavoritesViewModel.swift */; };
+		B61025D82A82756300CB1461 /* Navigation.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = B61025D62A82756300CB1461 /* Navigation.xcdatamodeld */; };
+		B61025DA2A8275E000CB1461 /* CoreDataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B61025D92A8275E000CB1461 /* CoreDataService.swift */; };
+		B61025DC2A83377B00CB1461 /* FavoritesTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B61025DB2A83377B00CB1461 /* FavoritesTableViewCell.swift */; };
+		B61025E02A845CE000CB1461 /* Post.swift in Sources */ = {isa = PBXBuildFile; fileRef = B61025DF2A845CE000CB1461 /* Post.swift */; };
+		B61025E22A846D0000CB1461 /* CoreDataPostsManipulation.swift in Sources */ = {isa = PBXBuildFile; fileRef = B61025E12A846D0000CB1461 /* CoreDataPostsManipulation.swift */; };
 		B648D26C29EE161500FDE722 /* ProfileCoordiantor.swift in Sources */ = {isa = PBXBuildFile; fileRef = B648D26B29EE161400FDE722 /* ProfileCoordiantor.swift */; };
 		B69758BF2A30B65300279646 /* BruteForce.swift in Sources */ = {isa = PBXBuildFile; fileRef = B69758BE2A30B65300279646 /* BruteForce.swift */; };
 		B69758C22A375CB500279646 /* YouTubeiOSPlayerHelper in Frameworks */ = {isa = PBXBuildFile; productRef = B69758C12A375CB500279646 /* YouTubeiOSPlayerHelper */; };
@@ -153,6 +161,14 @@
 		08F0949F2825E957003DA7CC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		08F094A52825EB62003DA7CC /* MainTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabBarController.swift; sourceTree = "<group>"; };
 		08F094A72825EB7D003DA7CC /* ProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
+		B61025CF2A808C4B00CB1461 /* FavoritesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesViewController.swift; sourceTree = "<group>"; };
+		B61025D12A808D7800CB1461 /* FavoritesCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesCoordinator.swift; sourceTree = "<group>"; };
+		B61025D32A80946E00CB1461 /* FavoritesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesViewModel.swift; sourceTree = "<group>"; };
+		B61025D72A82756300CB1461 /* CoreDataNavigation.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = CoreDataNavigation.xcdatamodel; sourceTree = "<group>"; };
+		B61025D92A8275E000CB1461 /* CoreDataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataService.swift; sourceTree = "<group>"; };
+		B61025DB2A83377B00CB1461 /* FavoritesTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesTableViewCell.swift; sourceTree = "<group>"; };
+		B61025DF2A845CE000CB1461 /* Post.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Post.swift; sourceTree = "<group>"; };
+		B61025E12A846D0000CB1461 /* CoreDataPostsManipulation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataPostsManipulation.swift; sourceTree = "<group>"; };
 		B648D26B29EE161400FDE722 /* ProfileCoordiantor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileCoordiantor.swift; sourceTree = "<group>"; };
 		B69758BE2A30B65300279646 /* BruteForce.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BruteForce.swift; sourceTree = "<group>"; };
 		B69758C42A375D3400279646 /* GoT.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = GoT.mp4; sourceTree = "<group>"; };
@@ -279,6 +295,7 @@
 				08600556295130AC00B0C954 /* Coordinators.swift */,
 				0860055829513B0D00B0C954 /* FeedCoordinator.swift */,
 				B648D26B29EE161400FDE722 /* ProfileCoordiantor.swift */,
+				B61025D12A808D7800CB1461 /* FavoritesCoordinator.swift */,
 				B6F840152A1119E200E48B07 /* BranchesFactory.swift */,
 			);
 			path = Coordinators;
@@ -339,6 +356,7 @@
 				B69758C32A375D1100279646 /* Resources */,
 				0860055529512B4800B0C954 /* Application */,
 				B6F4477D2A52262D00AB7E57 /* Network */,
+				B61025D52A82753800CB1461 /* CoreData */,
 				B6EE121129DC8BF100AA7FFD /* Model */,
 				0860055429512AB700B0C954 /* Coordinators */,
 				B6F840172A11241D00E48B07 /* Branches */,
@@ -346,6 +364,24 @@
 				B6B085DC299141C800AA8507 /* Garbage */,
 			);
 			path = Navigation;
+			sourceTree = "<group>";
+		};
+		B61025CE2A808C1B00CB1461 /* Favorites */ = {
+			isa = PBXGroup;
+			children = (
+				B61025D32A80946E00CB1461 /* FavoritesViewModel.swift */,
+				B61025CF2A808C4B00CB1461 /* FavoritesViewController.swift */,
+			);
+			path = Favorites;
+			sourceTree = "<group>";
+		};
+		B61025D52A82753800CB1461 /* CoreData */ = {
+			isa = PBXGroup;
+			children = (
+				B61025D62A82756300CB1461 /* Navigation.xcdatamodeld */,
+				B61025D92A8275E000CB1461 /* CoreDataService.swift */,
+			);
+			path = CoreData;
 			sourceTree = "<group>";
 		};
 		B69758C32A375D1100279646 /* Resources */ = {
@@ -361,6 +397,8 @@
 		B6B085DC299141C800AA8507 /* Garbage */ = {
 			isa = PBXGroup;
 			children = (
+				B61025E12A846D0000CB1461 /* CoreDataPostsManipulation.swift */,
+				B61025DB2A83377B00CB1461 /* FavoritesTableViewCell.swift */,
 				B69758BE2A30B65300279646 /* BruteForce.swift */,
 				08F094A52825EB62003DA7CC /* MainTabBarController.swift */,
 			);
@@ -376,6 +414,7 @@
 				0836A5BC283AEFDC007E62A4 /* Photos.swift */,
 				0836A5C028425211007E62A4 /* PublicConstants.swift */,
 				0860055B29513BEE00B0C954 /* Branch.swift */,
+				B61025DF2A845CE000CB1461 /* Post.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -416,6 +455,7 @@
 				B6EE121229DC8C6000AA7FFD /* Feed */,
 				088D472828F342DD0073F086 /* Login */,
 				082274F7282BCC9F000D1AD1 /* Profile */,
+				B61025CE2A808C1B00CB1461 /* Favorites */,
 			);
 			path = Branches;
 			sourceTree = "<group>";
@@ -607,12 +647,14 @@
 				08F094922825E956003DA7CC /* AppDelegate.swift in Sources */,
 				B6EE121629DC8E1E00AA7FFD /* UITextFieldExt.swift in Sources */,
 				087474FC2842B9A5001A282D /* DetailedPostViewController.swift in Sources */,
+				B61025D02A808C4B00CB1461 /* FavoritesViewController.swift in Sources */,
 				B6B92F6A2A661D8A0054805A /* FirebaseService.swift in Sources */,
 				B6B92F662A64E3140054805A /* SignUpViewController.swift in Sources */,
 				082274F62826FC60000D1AD1 /* InfoViewController.swift in Sources */,
 				B6B92F702A6C18470054805A /* StartViewController.swift in Sources */,
 				0836A5B9283A8715007E62A4 /* PhotosViewController.swift in Sources */,
 				08504B16293D16420071FF5B /* FeedModel.swift in Sources */,
+				B61025E22A846D0000CB1461 /* CoreDataPostsManipulation.swift in Sources */,
 				B6F8404E2A24125100E48B07 /* CoordinatorsProtocol.swift in Sources */,
 				08A6EBDA2835FAC9006EEA72 /* UIViewExt.swift in Sources */,
 				0836A5BB283A9151007E62A4 /* PhotosTableViewCell.swift in Sources */,
@@ -626,15 +668,21 @@
 				0836A5C128425211007E62A4 /* PublicConstants.swift in Sources */,
 				B6EE121429DC8DC300AA7FFD /* UIColorExt.swift in Sources */,
 				B69758BF2A30B65300279646 /* BruteForce.swift in Sources */,
+				B61025D42A80946F00CB1461 /* FavoritesViewModel.swift in Sources */,
 				B69758C92A37768700279646 /* VideoPostView.swift in Sources */,
 				B648D26C29EE161500FDE722 /* ProfileCoordiantor.swift in Sources */,
+				B61025E02A845CE000CB1461 /* Post.swift in Sources */,
+				B61025D82A82756300CB1461 /* Navigation.xcdatamodeld in Sources */,
 				08F094A62825EB62003DA7CC /* MainTabBarController.swift in Sources */,
 				086005602955303B00B0C954 /* FeedViewModel.swift in Sources */,
 				B69758C72A375DD100279646 /* PostTableViewCell.swift in Sources */,
 				08F094942825E956003DA7CC /* SceneDelegate.swift in Sources */,
+				B61025D22A808D7800CB1461 /* FavoritesCoordinator.swift in Sources */,
 				088D472E28F9BC5C0073F086 /* LoginInspector.swift in Sources */,
+				B61025DA2A8275E000CB1461 /* CoreDataService.swift in Sources */,
 				0836A5BF283BD8EB007E62A4 /* PhotosCollectionViewCell.swift in Sources */,
 				08504B14293A0FE60071FF5B /* CustomButton.swift in Sources */,
+				B61025DC2A83377B00CB1461 /* FavoritesTableViewCell.swift in Sources */,
 				082274F9282BCCFF000D1AD1 /* ProfileHeaderView.swift in Sources */,
 				088D472A28F343140073F086 /* Checker.swift in Sources */,
 				0860055C29513BEE00B0C954 /* Branch.swift in Sources */,
@@ -1046,6 +1094,19 @@
 			productName = FirebaseFirestore;
 		};
 /* End XCSwiftPackageProductDependency section */
+
+/* Begin XCVersionGroup section */
+		B61025D62A82756300CB1461 /* Navigation.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				B61025D72A82756300CB1461 /* CoreDataNavigation.xcdatamodel */,
+			);
+			currentVersion = B61025D72A82756300CB1461 /* CoreDataNavigation.xcdatamodel */;
+			path = Navigation.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = 08F094862825E955003DA7CC /* Project object */;
 }

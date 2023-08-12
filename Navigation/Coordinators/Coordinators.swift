@@ -16,15 +16,18 @@ class Coordinators: CoordinatorsProtocol {
         print("start")
         let feedCoordinator = FeedCoordinator(branchName: .feed(controller: .feed), factory: factory)
         let profileCoordinator = ProfileCoordinator(branchName: .profile(controller: .profile), factory: factory)
+        let favoritesCoordinator = FavoritesCoordinator(branchName: .favorites(controller: .favorites), factory: factory)
         UITabBar.appearance().backgroundColor = .systemGray6
 
         tabBarController.viewControllers = [
             feedCoordinator.start(),
-            profileCoordinator.start() //(authKey: false)
+            profileCoordinator.start(),
+            favoritesCoordinator.start()
         ]
         
         addChildCoordinator(feedCoordinator)
         addChildCoordinator(profileCoordinator)
+        addChildCoordinator(favoritesCoordinator)
         
         return tabBarController
     }
@@ -32,10 +35,12 @@ class Coordinators: CoordinatorsProtocol {
     func reload(authKey: Bool) -> UIViewController {
         let feedCoordinator = FeedCoordinator(branchName: .feed(controller: .feed), factory: factory)
         let profileCoordinator = ProfileCoordinator(branchName: .profile(controller: .profile), factory: factory)
+        let favoritesCoordinator = FavoritesCoordinator(branchName: .favorites(controller: .favorites), factory: factory)
         
         tabBarController.viewControllers = [
             feedCoordinator.start(),
-            profileCoordinator.start() //(authKey: authKey)
+            profileCoordinator.start(),
+            favoritesCoordinator.start()
         ]
         return tabBarController
     }

@@ -1,12 +1,13 @@
-import StorageService
+//import StorageService
 import UIKit
 
 class ProfileTableViewCell: UITableViewCell {
 
 //MARK: - PROPs
-    var index: IndexPath?
+    var indexPath: IndexPath?
     var post: Post?
-    weak var delegate: AddLikeDelegate?
+    weak var delegate: ProfileVCDelegate?
+    var isFavorites: Bool?
     
 //MARK: - ITEMs
     private let postView: UIView = {
@@ -27,6 +28,7 @@ class ProfileTableViewCell: UITableViewCell {
         $0.textColor = .systemGray
         $0.backgroundColor = .clear
         $0.isEditable = false
+        $0.isSelectable = false
         $0.isScrollEnabled = false
         return $0
     }(UITextView())
@@ -55,7 +57,8 @@ class ProfileTableViewCell: UITableViewCell {
 //MARK: - INITs
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        show()
+        setupUI()
+        addSingleAndDoubleTapGesture()
         setupLikesGestures()
         self.backgroundColor = .clear
     }
@@ -65,7 +68,41 @@ class ProfileTableViewCell: UITableViewCell {
     }
     
 //MARK: - METHODs
-    func show() {
+    private func addSingleAndDoubleTapGesture() {
+        let singleTapGesture = UITapGestureRecognizer(target: self, action: #selector(handleSingleTap))
+        singleTapGesture.numberOfTapsRequired = 1
+        self.addGestureRecognizer(singleTapGesture)
+
+        let doubleTapGesture = UITapGestureRecognizer(target: self, action: #selector(handleDoubleTap))
+        doubleTapGesture.numberOfTapsRequired = 2
+        self.addGestureRecognizer(doubleTapGesture)
+
+        singleTapGesture.require(toFail: doubleTapGesture)
+    }
+
+    @objc private func handleSingleTap(_ tapGesture: UITapGestureRecognizer) {
+        print("ONE")
+        guard let indexPath = indexPath else { return }
+        delegate?.openController(for: indexPath)
+    }
+
+    @objc private func handleDoubleTap(_ tapGesture: UITapGestureRecognizer) {
+        print("TWO")
+        guard let indexPath = indexPath else { return }
+        delegate?.addPostToFavorites(withIndex: indexPath)
+    }
+    
+    private func setupLikesGestures() {
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(tapLike))
+        likes.addGestureRecognizer(tapGesture)
+    }
+    
+    @objc private func tapLike (){
+        if let indexPath = indexPath { delegate?.addLike(indexPath, "Profile") }
+        if let post = post { likes.text = "Likes: \(post.likes)" }
+    }
+    
+    func setupUI() {
         [postView, postName, postDescription, postImage, likes, views].forEach { contentView.addSubview($0) }
         
         NSLayoutConstraint.activate([
@@ -101,19 +138,10 @@ class ProfileTableViewCell: UITableViewCell {
     }
 
     func setupCell(_ post: Post) {
-        postImage.image = post.imageName
+        postImage.image = UIImage(named: post.imageName)
         postName.text = post.author
-        postDescription.text = post.description
+        postDescription.text = post.postDescription
         likes.text = "Likes: \(post.likes)"
         views.text = "Views: \(post.views)"
-    }
-
-    private func setupLikesGestures() {
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(tapLike))
-        likes.addGestureRecognizer(tapGesture)
-    }
-    @objc private func tapLike (){
-        if let index = index { delegate?.addLike(index, "Profile") }
-        if let post = post { likes.text = "Likes: \(post.likes)" }
     }
 }

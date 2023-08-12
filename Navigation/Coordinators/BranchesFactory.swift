@@ -31,6 +31,11 @@ final class BranchesFactory {
             }
             let view = UINavigationController(rootViewController: vc)
             return Branch(branchName: branchName, view: view, viewModel: viewModel)
+        case .favorites:
+            let viewModel = FavoritesViewModel()
+            let vc = FavoritesViewController(viewModel: viewModel)
+            let view = UINavigationController(rootViewController: vc)
+            return Branch(branchName: branchName, view: view, viewModel: viewModel)
         }
     }
     func runLoginInspector(to vc: UIViewController) {

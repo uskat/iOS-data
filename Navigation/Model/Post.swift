@@ -1,15 +1,15 @@
 
 import UIKit
 
-struct Post {
-    public let id: UUID            //уникальный номер поста
+public struct Post {
+    public let id: String          //уникальный номер поста
     public let author: String      //автор публикации
     public var postDescription: String?//текст публикации
     public let imageName: String  //имя картинки из коллекции
     public var likes: Int32        //количество лайков у публикации
     public var views: Int32        //количество просмотров публикации
 
-    init(id: UUID, author: String, postDescription: String, imageName: String, likes: Int32, views: Int32) {
+    init(id: String, author: String, postDescription: String, imageName: String, likes: Int32, views: Int32) {
         self.id = id
         self.author = author
         self.postDescription = postDescription
@@ -18,13 +18,22 @@ struct Post {
         self.views = views
     }
     
+    init(postCoreDataModel: PostCoreDataModel) {
+        self.id = postCoreDataModel.id ?? UUID().uuidString
+        self.author = postCoreDataModel.author ?? ""
+        self.postDescription = postCoreDataModel.postDescription
+        self.imageName = postCoreDataModel.imageName ?? ""
+        self.likes = postCoreDataModel.likes
+        self.views = postCoreDataModel.views
+    }
+    
     static public func addPosts() -> [Post] {
         var post = [Post]()
         
-        post.append(Post(id: UUID(), author: "Chupa-Chups", postDescription: "Восприятие управляет реальностью. Все проблемы во вселенной от того, что никто никому не помогает. Страх приведет к темной стороне. Страх рождает гнев; гнев рождает ненависть; ненависть — залог страданий.", imageName: "post0", likes: 100, views: 300))
-        post.append(Post(id: UUID(), author: "Carbofos", postDescription: "Не сосредотачивайся на своих опасениях, Оби-Ван. Сконцентрируйся на том, что происходит сейчас и здесь.", imageName: "post1", likes: 110, views: 400))
-        post.append(Post(id: UUID(), author: " Jean-Paul Belmondo", postDescription: "Стал ты силён и могуч Дуку, тёмную сторону я в тебе ощущаю. ", imageName: "post2", likes: 120, views: 500))
-        post.append(Post(id: UUID(), author: "Donald Trump", postDescription:
+        post.append(Post(id: "001", author: "Chupa-Chups", postDescription: "Восприятие управляет реальностью. Все проблемы во вселенной от того, что никто никому не помогает. Страх приведет к темной стороне. Страх рождает гнев; гнев рождает ненависть; ненависть — залог страданий.", imageName: "post0", likes: 100, views: 300))
+        post.append(Post(id: "002", author: "Carbofos", postDescription: "Не сосредотачивайся на своих опасениях, Оби-Ван. Сконцентрируйся на том, что происходит сейчас и здесь.", imageName: "post1", likes: 110, views: 400))
+        post.append(Post(id: "003", author: " Jean-Paul Belmondo", postDescription: "Стал ты силён и могуч Дуку, тёмную сторону я в тебе ощущаю. ", imageName: "post2", likes: 120, views: 500))
+        post.append(Post(id: "004", author: "Donald Trump", postDescription:
                         """
                         Давным-давно в далёкой-далёкой галактике.. .
                         Война! Республика содрогается под атаками
@@ -41,7 +50,7 @@ struct Post {
                         по спасению захваченного канцлера.. .
                         """,
                          imageName: "post3", likes: 130, views: 600))
-        post.append(Post(id: UUID(), author: "T-1000", postDescription:
+        post.append(Post(id: "005", author: "T-1000", postDescription:
                         """
                          Штурмовик: Предъявите документы.
                          Оби Ван: Вам уже не нужны наши документы.
@@ -61,7 +70,7 @@ struct Post {
     static public func addFavorPosts() -> [Post] {
         var post = [Post]()
         
-        post.append(Post(id: UUID(), author: "Вестник Императора", postDescription: "Восприятие управляет реальностью. Все проблемы во вселенной от того, что никто никому не помогает. Страх приведет к темной стороне. Страх рождает гнев; гнев рождает ненависть; ненависть — залог страданий.", imageName: "pic04", likes: 9900, views: 33300))
+        post.append(Post(id: "006", author: "Вестник Императора", postDescription: "Восприятие управляет реальностью. Все проблемы во вселенной от того, что никто никому не помогает. Страх приведет к темной стороне. Страх рождает гнев; гнев рождает ненависть; ненависть — залог страданий.", imageName: "pic04", likes: 9900, views: 33300))
         return post
     }
 }
