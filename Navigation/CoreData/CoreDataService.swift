@@ -3,18 +3,18 @@ import Foundation
 import CoreData
 
 protocol CoreDataProtocol: AnyObject {
-    func addPostToFavorites(_ post: Post) -> Bool
-    func fetchPosts(predicate: NSPredicate?) -> [PostCoreDataModel]
-    func deletePost(predicate: NSPredicate?) -> Bool
+    func addPostToFavorites(_ post: Post, completion: @escaping (Bool) -> Void)
+    func fetchPosts(predicate: NSPredicate?, completion: @escaping ([PostCoreDataModel]) -> Void)
+    func deletePost(predicate: NSPredicate?, completion: @escaping (Bool) -> Void)
 }
 
 extension CoreDataProtocol {
-    func fetchPosts() -> [PostCoreDataModel] {
-        self.fetchPosts(predicate: nil)
+    func fetchPosts(completion: @escaping ([PostCoreDataModel]) -> Void) {
+        self.fetchPosts(predicate: nil, completion: completion)
     }
     
-    func deletePost() -> Bool {
-        self.deletePost(predicate: nil)
+    func deletePost(completion: @escaping (Bool) -> Void) {
+        self.deletePost(predicate: nil, completion: completion)
     }
 }
 
@@ -23,10 +23,16 @@ final class CoreDataService {
     let objectModel: NSManagedObjectModel
     let persistentStoreCoordinator: NSPersistentStoreCoordinator
     // 4. NSManagedObjectContext
-    private lazy var context: NSManagedObjectContext = {
+    private lazy var mainContext: NSManagedObjectContext = {
+        $0.persistentStoreCoordinator = self.persistentStoreCoordinator
+        return $0
+    }(NSManagedObjectContext(concurrencyType: .mainQueueConcurrencyType))
+    private lazy var backgroundContext: NSManagedObjectContext = {
+        $0.mergePolicy = NSOverwriteMergePolicy
         $0.persistentStoreCoordinator = self.persistentStoreCoordinator
         return $0
     }(NSManagedObjectContext(concurrencyType: .privateQueueConcurrencyType))
+    
     static let shared = CoreDataService()
     
     private init() { //при иниц CoreDataService будет иниц-ся база данных (хранилище)
@@ -70,60 +76,85 @@ final class CoreDataService {
 }
 
 extension CoreDataService: CoreDataProtocol {
-    func addPostToFavorites(_ post: Post) -> Bool {
-        let choosenPosts = self.fetchPosts(predicate: NSPredicate(format: "id == %@", post.id))
-        guard choosenPosts.isEmpty else {
-            return false
-        }
-        
-        let postCoreDataModel = PostCoreDataModel(context: self.context)
-        postCoreDataModel.id = post.id
-        postCoreDataModel.author = post.author
-        postCoreDataModel.imageName = post.imageName
-        postCoreDataModel.postDescription = post.postDescription
-        postCoreDataModel.likes = post.likes
-        postCoreDataModel.views = post.views
-        
-        guard self.context.hasChanges else {
-            return false
-        }
-        
-        do {
-            try self.context.save()
-            return true
-        } catch {
-            return false
+    func addPostToFavorites(_ post: Post, completion: @escaping (Bool) -> Void) {
+        self.backgroundContext.perform {
+            self.fetchPosts(predicate: NSPredicate(format: "id == %@", post.id)) { choosenPosts in
+                guard choosenPosts.isEmpty else {
+                    completion(false)
+                    return
+                }
+                
+                let postCoreDataModel = PostCoreDataModel(context: self.backgroundContext)
+                postCoreDataModel.id = post.id
+                postCoreDataModel.author = post.author
+                postCoreDataModel.imageName = post.imageName
+                postCoreDataModel.postDescription = post.postDescription
+                postCoreDataModel.likes = post.likes
+                postCoreDataModel.views = post.views
+                
+                guard self.backgroundContext.hasChanges else {
+                    self.mainContext.perform {
+                        completion(false)
+                    }
+                    return
+                }
+                
+                do {
+                    try self.backgroundContext.save()
+                    self.mainContext.perform {
+                        completion(true)
+                    }
+                } catch {
+                    self.mainContext.perform {
+                        completion(false)
+                    }
+                }
+            }
         }
     }
     
-    func fetchPosts(predicate: NSPredicate?) -> [PostCoreDataModel] {
-        let fetchRequest = PostCoreDataModel.fetchRequest()
-        fetchRequest.predicate = predicate
-        
-        do {
-            let storedPost = try self.context.fetch(fetchRequest)
-            return storedPost
-        } catch {
-            return []
+    func fetchPosts(predicate: NSPredicate?, completion: @escaping ([PostCoreDataModel]) -> Void)  {
+        self.backgroundContext.perform {
+            let fetchRequest = PostCoreDataModel.fetchRequest()
+            fetchRequest.predicate = predicate
+            do {
+                let storedPost = try self.backgroundContext.fetch(fetchRequest)
+                self.mainContext.perform {
+                    completion(storedPost)
+                }
+            } catch {
+                self.mainContext.perform {
+                    completion([])
+                }
+            }
         }
     }
     
-    func deletePost(predicate: NSPredicate?) -> Bool {
-        let choosenPosts = self.fetchPosts(predicate: predicate)
-        
-        choosenPosts.forEach {
-            self.context.delete($0)
-        }
-        
-        guard self.context.hasChanges else {
-            return false
-        }
-        
-        do {
-            try self.context.save()
-            return true
-        } catch {
-            return false
+    func deletePost(predicate: NSPredicate?, completion: @escaping (Bool) -> Void) {
+        self.backgroundContext.perform {
+            self.fetchPosts(predicate: predicate) { choosenPosts in
+                choosenPosts.forEach {
+                    self.backgroundContext.delete($0)
+                }
+                
+                guard self.backgroundContext.hasChanges else {
+                    self.mainContext.perform {
+                        completion(false)
+                    }
+                    return
+                }
+                
+                do {
+                    try self.backgroundContext.save()
+                    self.mainContext.perform {
+                        completion(true)
+                    }
+                } catch {
+                    self.mainContext.perform {
+                        completion(false)
+                    }
+                }
+            }
         }
     }
 }

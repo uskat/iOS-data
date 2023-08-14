@@ -8,6 +8,7 @@ class ProfileTableViewCell: UITableViewCell {
     var post: Post?
     weak var delegate: ProfileVCDelegate?
     var isFavorites: Bool?
+    let viewModel = ProfileViewModel()
     
 //MARK: - ITEMs
     private let postView: UIView = {
@@ -54,6 +55,15 @@ class ProfileTableViewCell: UITableViewCell {
         return $0
     }(UILabel())
     
+    private var addedPostLabel: UILabel = {
+        $0.translatesAutoresizingMaskIntoConstraints = false
+        $0.font = UIFont(name: "Papyrus", size: 24)
+        $0.textColor = UIColor.AccentColor.normal
+        $0.text = "Added to Favorites"
+        $0.alpha = 0.0
+        return $0
+    }(UILabel())
+    
 //MARK: - INITs
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -90,6 +100,7 @@ class ProfileTableViewCell: UITableViewCell {
         print("TWO")
         guard let indexPath = indexPath else { return }
         delegate?.addPostToFavorites(withIndex: indexPath)
+        flyingLabel()
     }
     
     private func setupLikesGestures() {
@@ -100,6 +111,29 @@ class ProfileTableViewCell: UITableViewCell {
     @objc private func tapLike (){
         if let indexPath = indexPath { delegate?.addLike(indexPath, "Profile") }
         if let post = post { likes.text = "Likes: \(post.likes)" }
+    }
+    
+    private func flyingLabel() {
+        contentView.addSubview(addedPostLabel)
+        self.addedPostLabel.alpha = 1.0
+        let labelXconstraint = self.addedPostLabel.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -6)
+        let labelYconstraint = self.addedPostLabel.topAnchor.constraint(equalTo: self.topAnchor, constant: 6)
+        NSLayoutConstraint.activate([labelXconstraint, labelYconstraint])
+        self.layoutIfNeeded()
+        
+        UIView.animate(withDuration: 1.0, delay: 0.0, options: .curveEaseOut) { [weak self] in
+//            labelXconstraint.constant += 100
+//            labelYconstraint.constant += -150
+            self?.addedPostLabel.alpha = 0.5
+            self?.layoutIfNeeded()
+        } completion: { _ in
+            UIView.animate(withDuration: 0.5, delay: 0.0, options: .curveLinear) { [weak self] in
+                self?.addedPostLabel.alpha = 0.0
+            } completion: { _ in
+                NSLayoutConstraint.deactivate([labelXconstraint, labelYconstraint])
+                self.addedPostLabel.removeFromSuperview()
+            }
+        }
     }
     
     func setupUI() {

@@ -63,7 +63,9 @@ public struct Post {
                          Штурмовик: Проезжайте, проезжайте.
                         """,
                          imageName: "post4", likes: 140, views: 700))
-        
+        post.append(Post(id: "006", author: "Carbofos", postDescription: "Текст1 Текст1 Текст1 Текст1 Текст1 Текст1 Текст1 Текст1 Текст1 Текст1 Текст1 Текст1 Текст1 Текст1 ", imageName: "post1", likes: 111, views: 111))
+        post.append(Post(id: "007", author: "Carbofos", postDescription: "Текст2 Текст2 Текст2 Текст2 Текст2 Текст2 Текст2 Текст2 Текст2 Текст2 Текст2 Текст2 Текст2 Текст2 ", imageName: "post1", likes: 1122, views: 555))
+        post.append(Post(id: "008", author: "Carbofos", postDescription: "Текст3 Текст3 Текст3 Текст3 Текст3 Текст3 Текст3 Текст3 Текст3 Текст3 Текст3 Текст3 Текст3 Текст3 ", imageName: "post1", likes: 11, views: 444))
         return post
     }
     
