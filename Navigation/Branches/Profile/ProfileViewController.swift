@@ -8,6 +8,10 @@ protocol ProfileVCDelegate: AnyObject {
     func addLike(_ index: IndexPath, _ from: String)
 }
 
+//protocol Coordinatable: AnyObject {
+//    var coordinatesOfDoubleTap: CGPoint? { get set }
+//}
+
 class ProfileViewController: UIViewController {
 
     var userService = CurrentUserService.shared
@@ -66,7 +70,12 @@ class ProfileViewController: UIViewController {
 //MARK: - METHODs
     
     private func showBarButton() {
-        let button = UIBarButtonItem(title: "Log Out", style: .plain, target: self, action: #selector(logOutAction))
+        let button = UIBarButtonItem(
+            title: "Log Out",
+            style: .plain,
+            target: self,
+            action: #selector(logOutAction))
+        button.tintColor = .red
         navigationItem.rightBarButtonItem = button
     }
     
@@ -183,12 +192,14 @@ extension ProfileViewController: ProfileVCDelegate {
     }
     
     func addPostToFavorites(withIndex indexPath: IndexPath) {
-        let success = coreDataService.addPostToFavorites(viewModel.posts[indexPath.row - 1])
-        if success {
-            favoritePosts.append(viewModel.posts[indexPath.row - 1])
+        let addedPost = viewModel.posts[indexPath.row - 1]
+        coreDataService.addPostToFavorites(addedPost) { success in
+            if success {
+                favoritePosts.append((addedPost))
+            }
         }
     }
-    
+
     func addLike(_ index: IndexPath, _ from: String) { ///vars: "Profile", "Detail"
         viewModel.posts[index.row - 1].likes += 1
         switch from {

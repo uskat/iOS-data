@@ -32,6 +32,7 @@ class FavoritesViewController: UIViewController {
         super.viewDidLoad()
         title = "Favorites"
         view.backgroundColor = .white
+        showBarButton()
         setupUI()
         self.fetchPosts()
     }
@@ -42,11 +43,62 @@ class FavoritesViewController: UIViewController {
     }
 
 //MARK: - METHODs
-    private func fetchPosts() {
-        let fetchedPosts = self.coreDataService.fetchPosts()
-        favoritePosts = fetchedPosts.map { Post(postCoreDataModel: $0) }
-        tableView.reloadData()
+    private func showBarButton() {
+        let filterOnButton = UIBarButtonItem(
+            image: UIImage(systemName: "rectangle.on.rectangle.circle"),
+            style: .plain,
+            target: self,
+            action: #selector(filterOn))
+        let filterOffButton = UIBarButtonItem(
+            image: UIImage(systemName: "rectangle.on.rectangle.slash.circle"),
+            style: .plain,
+            target: self,
+            action: #selector(filterOff))
+        navigationItem.rightBarButtonItems = [filterOffButton, filterOnButton]
     }
+    
+    private func fetchPosts() {
+        self.coreDataService.fetchPosts() { [weak self] fetchedPosts in
+            favoritePosts = fetchedPosts.map { Post(postCoreDataModel: $0) }
+            self?.tableView.reloadData()
+        }
+    }
+    
+    
+    @objc private func filterOn() {
+        alertOffilter()
+    }
+    
+    @objc private func filterOff() {
+        fetchPosts()
+    }
+    
+    private func alertOffilter() {
+        let alert = UIAlertController(title: "",
+                                      message: "",
+                                      preferredStyle: .alert)
+        alert.addTextField { textField in
+            textField.placeholder = "Type name"
+        }
+        let done = UIAlertAction(title: "Ok",
+                                   style: .default) { [weak alert] _ in
+            guard let textField = alert?.textFields else { return }
+            if let name = textField[0].text {
+                self.coreDataService.fetchPosts(predicate: NSPredicate(format: "author == %@", name)) { [weak self] fetchedPosts in
+                    favoritePosts = fetchedPosts.map { Post(postCoreDataModel: $0) }
+                    self?.tableView.reloadData()
+                }
+            }
+        }
+        let cancel = UIAlertAction(title: "Cancel",
+                                   style: .destructive) { _ in
+            print("Отмена")
+        }
+        alert.addAction(done)
+        alert.addAction(cancel)
+        present(alert, animated: true)
+    }
+    
     
     private func setupUI() {
         view.addSubview(tableView)
@@ -92,11 +144,11 @@ extension FavoritesViewController: UITableViewDelegate {
             style: .destructive,
             title: "Delete") { _, _, _ in
                 let post = favoritePosts[indexPath.row]
-                let success = self.coreDataService.deletePost(predicate: NSPredicate(format: "id == %@", post.id))
-                
-                if success {
-                    favoritePosts.remove(at: indexPath.row)
-                    self.tableView.reloadData()
+                self.coreDataService.deletePost(predicate: NSPredicate(format: "id == %@", post.id)) { [weak self] success in
+                    if success {
+                        favoritePosts.remove(at: indexPath.row)
+                        self?.tableView.reloadData()
+                    }
                 }
             }
         return UISwipeActionsConfiguration(actions: [deleteAction])
