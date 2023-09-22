@@ -3,6 +3,8 @@ import UIKit
 
 class PhotosTableViewCell: UITableViewCell {
     
+    weak var delegate: ProfileVCDelegate?
+
 //MARK: - ITEMs
     private let cellTitleName: UILabel = {
         $0.translatesAutoresizingMaskIntoConstraints = false
@@ -51,6 +53,7 @@ class PhotosTableViewCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         show()
         self.backgroundColor = .clear
+        addTapGesture()
         showPhotos()
     }
     
@@ -59,6 +62,16 @@ class PhotosTableViewCell: UITableViewCell {
     }
 
 //MARK: - METHODs
+    private func addTapGesture() {
+        let singleTapGesture = UITapGestureRecognizer(target: self, action: #selector(handleSingleTap))
+        self.addGestureRecognizer(singleTapGesture)
+    }
+
+    @objc private func handleSingleTap(_ tapGesture: UITapGestureRecognizer) {
+        print("000")
+        delegate?.openController(for: IndexPath(row: 0, section: 0))
+    }
+    
     private func show() {
         [cellTitleName, arrowToCollection, fourPhotosView].forEach({ contentView.addSubview($0) })
         arrayOfFirstFourPhotos.forEach({ fourPhotosView.addArrangedSubview($0) })

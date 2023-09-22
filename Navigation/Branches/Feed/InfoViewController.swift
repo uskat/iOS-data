@@ -128,34 +128,32 @@ class InfoViewController: UIViewController {
         var listOfResidents: [String] = ["List of residents of Tatuin:"]
 
         let task = URLSession.shared.dataTask(with: url) { data, response, error in
-            if let data = data {
-                do {
-                    let planet = try JSONDecoder().decode(PlanetModel.self, from: data)
-                    array = planet.residents
+            guard let data = data else { return }
+            do {
+                let planet = try JSONDecoder().decode(PlanetModel.self, from: data)
+                array = planet.residents
 
-                    for value in array {
-                        guard let url = URL(string: value) else { return }
+                for value in array {
+                    guard let url = URL(string: value) else { return }
 
-                        let task = URLSession.shared.dataTask(with: url) { data, response, error in
-                            if let data = data {
-                                do {
-                                    let planet = try JSONDecoder().decode(CitizenModel.self, from: data)
-                                    listOfResidents.append(planet.name)
-                                    OperationQueue.main.addOperation { [weak self] in
-                                        self?.jsonTask3Label.text = listOfResidents
-                                            .compactMap({ $0 })
-                                            .joined(separator: "\n")
-                                    }
-                                } catch {
-                                    print("⛔️ error: \(error.localizedDescription)")
-                                }
+                    let task = URLSession.shared.dataTask(with: url) { data, response, error in
+                        guard let data = data else { return }
+                        do {
+                            let planet = try JSONDecoder().decode(CitizenModel.self, from: data)
+                            listOfResidents.append(planet.name)
+                            OperationQueue.main.addOperation { [weak self] in
+                                self?.jsonTask3Label.text = listOfResidents
+                                    .compactMap({ $0 })
+                                    .joined(separator: "\n")
                             }
+                        } catch {
+                            print("⛔️ error: \(error.localizedDescription)")
                         }
-                        task.resume()
                     }
-                } catch {
-                    print("⛔️ error: \(error.localizedDescription)")
+                    task.resume()
                 }
+            } catch {
+                print("⛔️ error: \(error.localizedDescription)")
             }
         }
         task.resume()

@@ -113,6 +113,7 @@ extension ProfileViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if indexPath.row == 0 {
             let cell = tableView.dequeueReusableCell(withIdentifier: PhotosTableViewCell.identifier, for: indexPath) as! PhotosTableViewCell
+            cell.delegate = self
             return cell
         } else {
             let cell = tableView.dequeueReusableCell(withIdentifier: ProfileTableViewCell.identifier, for: indexPath) as! ProfileTableViewCell
@@ -170,6 +171,7 @@ extension ProfileViewController: ProfileVCDelegate {
     
     func openController(for indexPath: IndexPath) {
         if indexPath.row == 0 {
+            print("00000000")
             //анимированный push-переход с эффектом fade из Photos в Photo Galery
             let viewModel = ProfileViewModel()
             let photosVC = PhotosViewController(viewModel: viewModel)

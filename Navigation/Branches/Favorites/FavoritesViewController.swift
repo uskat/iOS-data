@@ -64,7 +64,6 @@ class FavoritesViewController: UIViewController {
         }
     }
     
-    
     @objc private func filterOn() {
         alertOffilter()
     }
